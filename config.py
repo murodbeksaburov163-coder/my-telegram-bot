@@ -2,7 +2,7 @@ import os
 
 # Bot tokeningizni shu yerga yozing yoki muhit o'zgaruvchisi orqali bering:
 #   export BOT_TOKEN="123456:ABC-DEF..."
-BOT_TOKEN = os.getenv("BOT_TOKEN", "PASTE_YOUR_BOT_TOKEN_HERE")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8619518195:AAEfJQwnEhnc5V5Ohw2SM7CMcv0V04jYiL4")
 
 # Majburiy obuna talab qilinadigan kanal va chat (username, @ belgisisiz saqlaymiz)
 REQUIRED_CHANNEL = "@K0NKURS_UZ"
