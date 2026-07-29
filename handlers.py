@@ -444,7 +444,14 @@ async def on_group_message(message: Message, bot: Bot):
             message.chat.id, message.reply_to_message.message_id
         )
         if participant_id:
-            await db.increment_counter(participant_id, "comments", 1)
-            p = await db.get_participant_by_id(participant_id)
-            battle = await db.get_battle(p["battle_id"])
-            await refresh_participant_message(bot, p, battle)
+            user_id = message.from_user.id
+            
+            # Shu foydalanuvchi bu ishtirokchiga oldin komment yozganligini tekshiramiz
+            is_first_comment = await db.check_and_save_comment(participant_id, user_id)
+            
+            if is_first_comment:
+                await db.increment_counter(participant_id, "comments", 1)
+                p = await db.get_participant_by_id(participant_id)
+                battle = await db.get_battle(p["battle_id"])
+                await refresh_participant_message(bot, p, battle)
+        
