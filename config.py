@@ -1,0 +1,11 @@
+import os
+
+# Bot tokeningizni shu yerga yozing yoki muhit o'zgaruvchisi orqali bering:
+#   export BOT_TOKEN="123456:ABC-DEF..."
+BOT_TOKEN = os.getenv("BOT_TOKEN", "PASTE_YOUR_BOT_TOKEN_HERE")
+
+# Majburiy obuna talab qilinadigan kanal va chat (username, @ belgisisiz saqlaymiz)
+REQUIRED_CHANNEL = "@K0NKURS_UZ"
+REQUIRED_CHAT = "@bepul_gifts"
+
+DB_PATH = os.getenv("DB_PATH", "konkurs_bot.db")
