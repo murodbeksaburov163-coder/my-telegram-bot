@@ -14,7 +14,7 @@ from handlers import router
 async def main():
     logging.basicConfig(level=logging.INFO)
 
-    if not BOT_TOKEN or BOT_TOKEN == "PASTE_YOUR_BOT_TOKEN_HERE":
+    if not BOT_TOKEN or BOT_TOKEN == "8619518195:AAEfJQwnEhnc5V5Ohw2SM7CMcv0V04jYiL4":
         raise RuntimeError("config.py ichida yoki BOT_TOKEN muhit o'zgaruvchisida haqiqiy tokenni kiriting.")
 
     await init_db()
