@@ -46,6 +46,12 @@ CREATE TABLE IF NOT EXISTS group_message_map (
     participant_id INTEGER,
     PRIMARY KEY (discussion_group_id, group_message_id)
 );
+CREATE TABLE IF NOT EXISTS commented_users (
+    participant_id INTEGER,
+    user_id INTEGER,
+    PRIMARY KEY (participant_id, user_id)
+);
+
 """
 
 
@@ -291,3 +297,19 @@ async def get_participant_by_group_message(discussion_group_id, group_message_id
         )
         row = await cur.fetchone()
         return row["participant_id"] if row else None
+async def check_and_save_comment(participant_id, user_id):
+    """
+    Agar foydalanuvchi bu ishtirokchiga oldin komment yozmagan bo'lsa, bazaga yozadi va True qaytaradi.
+    Agar oldin yozgan bo'lsa, False qaytaradi (ball qo'shilmaydi).
+    """
+    async with aiosqlite.connect(DB_PATH) as db:
+        try:
+            await db.execute(
+                "INSERT INTO commented_users (participant_id, user_id) VALUES (?, ?)",
+                (participant_id, user_id),
+            )
+            await db.commit()
+            return True
+        except aiosqlite.IntegrityError:
+            return False
+            
