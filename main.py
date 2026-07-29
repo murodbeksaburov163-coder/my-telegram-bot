@@ -21,7 +21,6 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"Bot is running successfully!")
         
-    # Render loglarini ortiqcha ma'lumotlar bilan to'ldirmaslik uchun loglarni o'chiramiz
     def log_message(self, format, *args):
         return
 
@@ -30,9 +29,8 @@ def run_server():
     server = HTTPServer(("0.0.0.0", port), SimpleHandler)
     server.serve_forever()
 
-# Serverni alohida oqimda (thread) ishga tushiramiz, u bot polling jarayoniga xalaqit bermaydi
+# Serverni alohida oqimda ishga tushiramiz
 threading.Thread(target=run_server, daemon=True).start()
---------------------------------------------------
 
 
 async def main():
@@ -44,7 +42,7 @@ async def main():
     dp.include_router(router)
 
     await bot.delete_webhook(drop_pending_updates=True)
-    # Kerakli barcha update turlari (reaksiya, boost, guruh xabarlari) avtomatik aniqlanadi
+    # Kerakli barcha update turlari avtomatik aniqlanadi
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 
