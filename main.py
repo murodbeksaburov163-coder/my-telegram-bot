@@ -13,10 +13,6 @@ from handlers import router
 
 async def main():
     logging.basicConfig(level=logging.INFO)
-
-    if not BOT_TOKEN or BOT_TOKEN == "8619518195:AAEfJQwnEhnc5V5Ohw2SM7CMcv0V04jYiL4":
-        raise RuntimeError("8619518195:AAEfJQwnEhnc5V5Ohw2SM7CMcv0V04jYiL4")
-
     await init_db()
 
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
