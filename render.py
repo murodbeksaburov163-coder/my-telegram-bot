@@ -21,18 +21,24 @@ def announce_text_ended(prize, start_time, end_time):
 
 
 def participant_text(p, battle):
-    total = total_score(p, battle)
-    name = p["full_name"] or (f"@{p['username']}" if p["username"] else str(p["user_id"]))
+    # Ballarni hisoblash
+    reactions_score = p["reactions"] * battle["points_reaction"]
+    comments_score = p["comments"] * battle["points_comment"]
+    stars_score = p["stars"] * battle["points_star"]
+    boosts_score = p["boosts"] * battle["points_boost"]
+    total = reactions_score + comments_score + stars_score + boosts_score + p["bonus"]
+
     return (
-        f"{p['seq_number']}-ishtirokchi\n"
-        f"{name}\n\n"
-        f"Reaksiya {p['reactions']}ta ({p['reactions'] * battle['points_reaction']:g} ball)\n"
-        f"Comment {p['comments']}ta ({p['comments'] * battle['points_comment']:g} ball)\n"
-        f"Stars {p['stars']}ta ({p['stars'] * battle['points_star']:g} ball)\n"
-        f"Boost {p['boosts']}ta ({p['boosts'] * battle['points_boost']:g} ball)\n"
-        f"Bonus {p['bonus']:g} ball\n\n"
-        f"Jami: {total:g} ball"
+        f"<b>{p['seq_number']}-ishtirokchi</b>\n"
+        f"👤 <b>{p['full_name']}</b>\n\n"
+        f"❤️ Reaksiya: {p['reactions']}ta ({reactions_score:g} ball)\n"
+        f"💬 Izoh (Comment): {p['comments']}ta ({comments_score:g} ball)\n"
+        f"⭐ Stars: {p['stars']}ta ({stars_score:g} ball)\n"
+        f"🚀 Boost: {p['boosts']}ta ({boosts_score:g} ball)\n"
+        f"🎁 Bonus: {p['bonus']:g} ball\n\n"
+        f"🏆 <b>Jami: {total:g} ball</b>"
     )
+
 
 
 def leaderboard_text(ranked, battle):
