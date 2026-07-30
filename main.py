@@ -1,3 +1,5 @@
+import asyncio
+import logging
 import os
 from aiogram import Bot, Dispatcher, types
 from aiohttp import web
@@ -29,12 +31,18 @@ async def handle_webhook(request: web.Request):
   return web.Response()
 
 
+async def handle_root(request: web.Request):
+  # Render health check (404 xatosi chiqmasligi uchun)
+  return web.Response(text="Bot is running!")
+
+
 async def main():
   # aiogram voqealarini ulash
   dp.startup.register(on_startup)
 
   # aiohttp ilovasini yaratish
   app = web.Application()
+  app.router.add_get("/", handle_root)
   app.router.add_post(WEBHOOK_PATH, handle_webhook)
 
   # Serverni ishga tushirish
@@ -48,9 +56,6 @@ async def main():
 
 
 if __name__ == "__main__":
-  import asyncio
-  import logging
-
   logging.basicConfig(level=logging.INFO)
   asyncio.run(main())
-    
+  
