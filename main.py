@@ -1,51 +1,56 @@
-import asyncio
-import logging
 import os
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import threading
+from aiogram import Bot, Dispatcher, types
+from aiohttp import web
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
+# Token va boshqa sozlamalar
+TOKEN = os.getenv("BOT_TOKEN")
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
 
-from config import BOT_TOKEN
-from db import init_db
-from handlers import router
+# Render beradigan URL (masalan: https://sizning-botingiz.onrender.com)
+RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL")
+WEBHOOK_PATH = f"/bot/{TOKEN}"
+WEBHOOK_URL = f"{RENDER_EXTERNAL_URL}{WEBHOOK_PATH}"
+
+# Portni Render avtomatik beradi yoki 10000 ishlatiladi
+PORT = int(os.getenv("PORT", 10000))
 
 
-# --- Render port talabini qondirish uchun HTTP server ---
-class SimpleHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running successfully!")
-        
-    def log_message(self, format, *args):
-        return
+async def on_startup(bot: Bot):
+  # Bot ishga tushganda webhook'ni o'rnatish
+  await bot.set_webhook(WEBHOOK_URL)
 
-def run_server():
-    port = int(os.environ.get("PORT", 10000))
-    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
-    server.serve_forever()
 
-# Serverni alohida oqimda ishga tushiramiz
-threading.Thread(target=run_server, daemon=True).start()
+async def handle_webhook(request: web.Request):
+  # Telegramdan kelgan JSON ma'lumotlarni aiogram'ga uzatish
+  data = await request.json()
+  update = types.Update(**data)
+  await dp.feed_update(bot, update)
+  return web.Response()
 
 
 async def main():
-    logging.basicConfig(level=logging.INFO)
-    await init_db()
+  # aiogram voqealarini ulash
+  dp.startup.register(on_startup)
 
-    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    dp = Dispatcher(storage=MemoryStorage())
-    dp.include_router(router)
+  # aiohttp ilovasini yaratish
+  app = web.Application()
+  app.router.add_post(WEBHOOK_PATH, handle_webhook)
 
-    await bot.delete_webhook(drop_pending_updates=True)
-    # Kerakli barcha update turlari avtomatik aniqlanadi
-    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+  # Serverni ishga tushirish
+  runner = web.AppRunner(app)
+  await runner.setup()
+  site = web.TCPSite(runner, "0.0.0.0", PORT)
+  await site.start()
+
+  # Bot to'xtaguncha ishni ushlab turish
+  await asyncio.Event().wait()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+  import asyncio
+  import logging
+
+  logging.basicConfig(level=logging.INFO)
+  asyncio.run(main())
     
