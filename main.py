@@ -9,7 +9,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Render beradigan URL (masalan: https://sizning-botingiz.onrender.com)
+# Render beradigan URL
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL")
 WEBHOOK_PATH = f"/bot/{TOKEN}"
 WEBHOOK_URL = f"{RENDER_EXTERNAL_URL}{WEBHOOK_PATH}"
@@ -35,7 +35,7 @@ async def handle_webhook(request: web.Request):
 
 
 async def handle_root(request: web.Request):
-  # Render health check (404 xatosi chiqmasligi uchun)
+  # Render va UptimeRobot (GET va HEAD so'rovlari) uchun 200 OK qaytarish
   return web.Response(text="Bot is running!")
 
 
@@ -46,6 +46,7 @@ async def main():
   # aiohttp ilovasini yaratish
   app = web.Application()
   app.router.add_get("/", handle_root)
+  app.router.add_head("/", handle_root)  # UptimeRobot HEAD so'rovini ushlash uchun
   app.router.add_post(WEBHOOK_PATH, handle_webhook)
 
   # Serverni ishga tushirish
@@ -61,4 +62,3 @@ async def main():
 if __name__ == "__main__":
   logging.basicConfig(level=logging.INFO)
   asyncio.run(main())
-  
