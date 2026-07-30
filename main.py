@@ -24,10 +24,13 @@ async def on_startup(bot: Bot):
 
 
 async def handle_webhook(request: web.Request):
-  # Telegramdan kelgan JSON ma'lumotlarni aiogram'ga uzatish
-  data = await request.json()
-  update = types.Update(**data)
-  await dp.feed_update(bot, update)
+  try:
+    data = await request.json()
+    # aiogram 3 uchun to'g'ri validatsiya qilib uzatish
+    update = types.Update.model_validate(data, context={"bot": bot})
+    await dp.feed_update(bot, update)
+  except Exception as e:
+    logging.error(f"Webhook error: {e}")
   return web.Response()
 
 
