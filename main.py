@@ -35,7 +35,7 @@ async def handle_webhook(request: web.Request):
 
 
 async def handle_root(request: web.Request):
-  # Render va UptimeRobot (GET va HEAD so'rovlari) uchun 200 OK qaytarish
+  # Render va UptimeRobot uchun 200 OK qaytarish
   return web.Response(text="Bot is running!")
 
 
@@ -46,7 +46,6 @@ async def main():
   # aiohttp ilovasini yaratish
   app = web.Application()
   app.router.add_get("/", handle_root)
-  app.router.add_head("/", handle_root)  # UptimeRobot HEAD so'rovini ushlash uchun
   app.router.add_post(WEBHOOK_PATH, handle_webhook)
 
   # Serverni ishga tushirish
@@ -62,3 +61,4 @@ async def main():
 if __name__ == "__main__":
   logging.basicConfig(level=logging.INFO)
   asyncio.run(main())
+    
